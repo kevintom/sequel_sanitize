@@ -1,0 +1,37 @@
+= sequel_sanitize
+
+== Install
+
+Add gemcutter.org source if you don't have it:
+  gem source http://gemcutter.org
+
+Install:
+  [sudo] gem install sequel_sanitize
+
+== Usage
+
+This plug-in provide functionality to allow Sequel::Model to have fields sanitized
+with a defined or default method.
+
+To use plug-in you add plug-in to your model:
+
+  class MyModel < Sequel::Model
+    plugin :sanitize, :fields => [:first_name, :last_name], :sanitizer => :name_sanitizer
+    plugin :sanitize, :fields => [:email], :downcase => true
+  end
+
+You can use following options:
+*fields*:: an array of the fields that the sanitizer method should be applied to
+*sanitizer*:: Proc or Symbol to call to sanitize the value of the field.
+*downcase*:: Set to true to downcase the value returned from the sanitizer
+
+Options *sanitizer* and *downcase* are optional.
+
+<b>Options are inherited when you use inheritance for your models</b>. However
+you can only set options via plugin method.
+
+If you don't provide a :sanitizer, the default sanitizer method will strip whitespace
+
+== Copyright
+
+Copyright (c) 2011 Kevin Tom. See LICENSE for details.
