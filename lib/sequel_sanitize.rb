@@ -16,7 +16,7 @@ module Sequel
               do_downcase = self.class.sanitize_options[:field_downcase][f]
               sanitized = sanitizer.call(value) if sanitizer.respond_to?(:call)
               sanitized ||= self.send(sanitizer, value) if sanitizer
-              sanitized = sanitized.downcase if do_downcase
+              sanitized = sanitized.downcase if do_downcase and sanitized.respond_to?(:downcase)
               super(sanitized)
             end
           end
