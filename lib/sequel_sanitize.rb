@@ -35,12 +35,12 @@ module Sequel
         def sanitize_options=(options)
           fields = options[:fields]
           if fields.nil? || !fields.is_a?(Array) || fields.empty?
-            raise ArgumentError, ":fields must be a non-empty array" 
+            raise ArgumentError, ":fields must be a non-empty array"
           end
           options[:fields] = fields.uniq.compact
           sanitizer = options[:sanitizer]
           if sanitizer && !sanitizer.is_a?(Symbol) && !sanitizer.respond_to?(:call)
-            raise ArgumentError, "If you provide :sanitizer it must be Symbol or callable." 
+            raise ArgumentError, "If you provide :sanitizer it must be Symbol or callable."
           end
           sanitizer_to_be_called = sanitizer.nil? ? :sanitize_field : sanitizer
           do_downcase = options[:downcase].class == TrueClass
