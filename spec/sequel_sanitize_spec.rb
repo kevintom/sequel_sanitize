@@ -12,10 +12,10 @@ describe "SequelSanitize" do
     it "should be loaded using Model.plugin" do
       Item.plugins.should include(Sequel::Plugins::Sanitize)
     end
-    
+
     it "should require a field array" do
       class Item2 < Sequel::Model; end
-      lambda {Item2.plugin :sanitize}.should raise_error(ArgumentError, ":fields must be a non-empty array")      
+      lambda {Item2.plugin :sanitize}.should raise_error(ArgumentError, ":fields must be a non-empty array")
     end
 
     it "should require a sanitizer to be a symbol or callable" do
@@ -27,8 +27,16 @@ describe "SequelSanitize" do
       i = Item.new(:name => "     Kevin  ")
       i.name.should eql "Kevin"
     end
+
+    it 'should allow a Proc as sanitizer to return nil' do
+      class Item < Sequel::Model
+        plugin :sanitize, :fields => [:name], :sanitizer => Proc.new{|s| nil}
+      end
+      i = Item.new(:name => "  ")
+      i.name.should eql nil
+    end
   end
-  
+
   describe "downcase option" do
     before(:each) do
       Item.plugin :sanitize, :fields => [:name]
@@ -47,13 +55,13 @@ describe "SequelSanitize" do
       Item2.plugin :sanitize, :fields => [:name, nil]
       Item2.sanitize_options[:fields].should eql [:name]
     end
-  
+
     it 'should remove duplicate fields' do
       class Item2 < Sequel::Model; end
       Item2.plugin :sanitize, :fields => [:name, :slug, :name]
       Item2.sanitize_options[:fields].count.should eql 2
     end
-    
+
     it 'should add to the field list on multiple calls' do
       #not overwrite fields when you add more fields with different options
       class Item2 < Sequel::Model; end
@@ -62,7 +70,7 @@ describe "SequelSanitize" do
       Item2.plugin :sanitize, :fields => [:more, :columns, :name]
       Item2.sanitize_options[:fields].should eql [:name, :slug, :more, :columns]
     end
-    
+
     it 'should aggregate the values of field options' do
       class Item2 < Sequel::Model; end
       Item2.plugin :sanitize, :fields => [:name, :slug]
