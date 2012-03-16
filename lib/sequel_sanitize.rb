@@ -1,7 +1,7 @@
 module Sequel
   module Plugins
-    # The Sanitize plugin basically does a 'before_filter' on 
-    # specified fields, if no sanitizer is specified the default 
+    # The Sanitize plugin basically does a 'before_filter' on
+    # specified fields, if no sanitizer is specified the default
     # one is used
     #
     module Sanitize
@@ -14,8 +14,10 @@ module Sequel
             define_method("#{f}=") do |value|
               sanitizer = self.class.sanitize_options[:field_sanitize][f]
               do_downcase = self.class.sanitize_options[:field_downcase][f]
-              sanitized = sanitizer.call(value) if sanitizer.respond_to?(:call)
-              sanitized ||= self.send(sanitizer, value) if sanitizer
+              if sanitizer
+                sanitized = sanitizer.call(value) if sanitizer.respond_to?(:call)
+                sanitized = self.send(sanitizer, value) if sanitizer.is_a? Symbol
+              end
               sanitized = sanitized.downcase if do_downcase and sanitized.respond_to?(:downcase)
               super(sanitized)
             end
